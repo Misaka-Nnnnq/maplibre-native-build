@@ -25,8 +25,13 @@ jobs:
       - name: git configure long path
         run: git config --global core.longpaths true
 
-      - name: git fetch
-        run: git clone --config core.longpaths=true --depth 1 --recurse-submodules -j8 https://github.com/maplibre/maplibre-native.git -b android-v11.13.5
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: hxbb00/maplibre-native
+          ref: android-v11.12.1
+          submodules: recursive
+          path: maplibre-native
 
       - name: Setup ninja
         uses: seanmiddleditch/gha-setup-ninja@v4
@@ -52,22 +57,22 @@ jobs:
         env:
           COMPILER_TYPE: ${{ matrix.compiler }}
         run: |
-          cd maplibre-native
-          cmake --preset windows-opengl \
+          mkdir build && cd build
+          cmake.exe ../maplibre-native/ \
+            -G"Ninja Multi-Config" \
+            -DCMAKE_CONFIGURATION_TYPES="Release;Debug" \
             -DCMAKE_C_COMPILER_LAUNCHER="ccache.exe" \
-            -DCMAKE_CXX_COMPILER_LAUNCHER="ccache.exe"
-          cmake --build build-windows-opengl \
-            -DCMAKE_C_COMPILER_LAUNCHER="ccache.exe" \
-            -DCMAKE_CXX_COMPILER_LAUNCHER="ccache.exe"
+            -DCMAKE_CXX_COMPILER_LAUNCHER="ccache.exe" \
+            -DCMAKE_INSTALL_PREFIX="../install"
+          ninja.exe
 
       - name: Upload sdk
         uses: actions/upload-artifact@v4
         with:
           name: MapLibre_Windows_${{ matrix.arch }}
           path: |
-            maplibre-native/build-windows-opengl/**/*.lib
-            maplibre-native/build-windows-opengl/**/*.exe
-            maplibre-native/build-windows-opengl/CMakeFiles/**/*.pdb
+            build/**/*.lib
+            build/CMakeFiles/**/*.pdb
             maplibre-native/include/
             maplibre-native/platform/windows/vendor/vcpkg/installed/x64-windows/
             maplibre-native/vendor/**/include/
