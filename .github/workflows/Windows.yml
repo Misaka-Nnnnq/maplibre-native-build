@@ -57,24 +57,22 @@ jobs:
         env:
           COMPILER_TYPE: ${{ matrix.compiler }}
         run: |
-          mkdir build && cd build
-          cmake.exe ../maplibre-native/ \
-            -G"Ninja Multi-Config" \
-            -DCMAKE_CONFIGURATION_TYPES="Release;Debug" \
+          cd maplibre-native
+          cmake --preset windows-opengl \
             -DCMAKE_C_COMPILER_LAUNCHER="ccache.exe" \
-            -DCMAKE_CXX_COMPILER_LAUNCHER="ccache.exe" \
-            -DCMAKE_INSTALL_PREFIX="../install" \
-            -DMLN_WITH_OPENGL=ON
-          ninja.exe
+            -DCMAKE_CXX_COMPILER_LAUNCHER="ccache.exe"
+          cmake --build build-windows-opengl \
+            -DCMAKE_C_COMPILER_LAUNCHER="ccache.exe" \
+            -DCMAKE_CXX_COMPILER_LAUNCHER="ccache.exe"
 
       - name: Upload sdk
         uses: actions/upload-artifact@v4
         with:
           name: MapLibre_Windows_${{ matrix.arch }}
           path: |
-            build/**/*.lib
-            build/**/*.exe
-            build/CMakeFiles/**/*.pdb
+            maplibre-native/build-windows-opengl/**/*.lib
+            maplibre-native/build-windows-opengl/**/*.exe
+            maplibre-native/build-windows-opengl/CMakeFiles/**/*.pdb
             maplibre-native/include/
             maplibre-native/platform/windows/vendor/vcpkg/installed/x64-windows/
             maplibre-native/vendor/**/include/
