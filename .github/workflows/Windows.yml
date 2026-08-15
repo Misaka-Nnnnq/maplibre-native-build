@@ -25,13 +25,8 @@ jobs:
       - name: git configure long path
         run: git config --global core.longpaths true
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: maplibre/maplibre-native
-          ref: android-v11.13.5
-          submodules: recursive
-          path: maplibre-native
+      - name: git fetch
+        run: git clone --config core.longpaths=true --depth 1 --recurse-submodules -j8 https://github.com/maplibre/maplibre-native.git -b android-v11.13.5
 
       - name: Setup ninja
         uses: seanmiddleditch/gha-setup-ninja@v4
