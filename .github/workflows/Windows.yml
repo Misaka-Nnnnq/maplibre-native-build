@@ -28,7 +28,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: Misaka-Nnnnq/maplibre-native
+          repository: mapbox/mapbox-gl-native
+          # ref: android-v11.13.5
           submodules: recursive
           path: maplibre-native
 
@@ -71,6 +72,7 @@ jobs:
           name: MapLibre_Windows_${{ matrix.arch }}
           path: |
             build/**/*.lib
+            build/**/*.exe
             build/CMakeFiles/**/*.pdb
             maplibre-native/include/
             maplibre-native/platform/windows/vendor/vcpkg/installed/x64-windows/
